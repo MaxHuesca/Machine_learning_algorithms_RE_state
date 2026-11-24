@@ -1,0 +1,10 @@
+,model__C,model__kernel
+0,1,linear
+1,1,rbf
+2,1,poly
+3,5,linear
+4,5,rbf
+5,5,poly
+6,10,linear
+7,10,rbf
+8,10,poly
