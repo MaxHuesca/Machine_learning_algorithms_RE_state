@@ -1,0 +1,5 @@
+,model__class_weight,model__criterion
+0,balanced,gini
+1,balanced,entropy
+2,,gini
+3,,entropy

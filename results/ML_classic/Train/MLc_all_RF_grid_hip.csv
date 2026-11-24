@@ -1,0 +1,17 @@
+,model__class_weight,model__criterion,model__n_estimators
+0,balanced,gini,50
+1,balanced,gini,100
+2,balanced,gini,200
+3,balanced,gini,500
+4,balanced,entropy,50
+5,balanced,entropy,100
+6,balanced,entropy,200
+7,balanced,entropy,500
+8,,gini,50
+9,,gini,100
+10,,gini,200
+11,,gini,500
+12,,entropy,50
+13,,entropy,100
+14,,entropy,200
+15,,entropy,500
