@@ -1,0 +1,11 @@
+{
+    "parameters": {
+        "model__learning_rate": 0.1,
+        "model__max_depth": 2,
+        "model__min_child_weight": 1,
+        "model__n_estimators": 128,
+        "model__reg_lambda": 10,
+        "model__scale_pos_weight": 1
+    },
+    "cv_f1_macro": 0.8446235542609433
+}

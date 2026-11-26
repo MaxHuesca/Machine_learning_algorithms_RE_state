@@ -1,0 +1,16 @@
+Training XGBoost model on Full dataset...
+Fitting 5 folds for each of 64 candidates, totalling 320 fits
+Best CV F1 macro: 0.8467
+Test F1 macro: 0.8401
+Results saved in results/xgboost/full
+Training XGBoost model on ANOVA dataset...
+Fitting 5 folds for each of 64 candidates, totalling 320 fits
+Best CV F1 macro: 0.8446
+Test F1 macro: 0.8401
+Results saved in results/xgboost/anova
+Training XGBoost model on MI dataset...
+Fitting 5 folds for each of 64 candidates, totalling 320 fits
+Best CV F1 macro: 0.8581
+Test F1 macro: 0.8188
+Results saved in results/xgboost/mi
+Cache directory results/xgboost/mi/cache deleted.
