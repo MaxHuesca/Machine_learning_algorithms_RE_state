@@ -102,7 +102,10 @@ def main():
 
         grid = GridSearchCV(
             estimator=pipeline,
-            param_grid={f"model__{key}": values for key, values in parameters.items()},
+            param_grid={
+                f"model__{key}": values 
+                for key, values in parameters.items()
+            },
             scoring="f1_macro",
             cv=cv,
             n_jobs=NTHREAD,
@@ -124,10 +127,11 @@ def main():
         best_model.named_steps["model"].save_model(str(output / f"model_{name}.json"))
 
         # Save selected metabolites and their XGBoost importance
-        if name == "Full":
-            features = F_train.columns
-        else:
-            features = best_model.named_steps["selection"].get_feature_names_out()
+        features = (
+            F_train.columns
+            if name == "Full"
+            else best_model.named_steps["selection"].get_feature_names_out()
+        )
 
         pd.DataFrame({
             "metabolite": features,
