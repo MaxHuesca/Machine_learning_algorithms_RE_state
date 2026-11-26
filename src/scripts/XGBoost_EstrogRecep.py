@@ -11,6 +11,7 @@ from sklearn.model_selection import StratifiedKFold, GridSearchCV
 from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
 from functools import partial
+from shutil import rmtree
 from pathlib import Path
 import argparse as ap
 import joblib as jb
@@ -20,7 +21,7 @@ import json as js
 import os
 
 __author__ = "Pablo Salazar-Méndez"
-NTHREAD = 5
+NTHREAD = int(os.environ.get("NSLOTS", 10))
 
 # ============== FUNCTIONS ==============
 def generate_df(file_path: list[Path], sep: str = ",", index_col: int | None = None) -> list[pd.DataFrame]:
@@ -59,18 +60,17 @@ def main():
         Path(data / "EstrogenReceptorStatus_Train_labels.txt"), Path(data / "EstrogenReceptorStatus_Test_labels.txt")
     ])
 
-    # ANOVA DATASET
+    percentile = 20
     selectors = {
         "Full": "passthrough",
-        "ANOVA": SelectPercentile(score_func=f_classif, percentile=20),
-        "MI": SelectPercentile(score_func=partial(mutual_info_classif, random_state=42), percentile=20)
+        "ANOVA": SelectPercentile(score_func=f_classif, percentile=percentile),
+        "MI": SelectPercentile(score_func=partial(mutual_info_classif, random_state=42), percentile=percentile)
     }
 
     model = XGBClassifier(
         objective="binary:logistic",
         eval_metric="logloss",
         tree_method="hist", # Faster histogram optimized approximate greedy algorithm (taken from offical documentation)
-        use_label_encoder=False,
         random_state=42,
         n_jobs=1,
         subsample=0.8
@@ -90,10 +90,15 @@ def main():
     )
 
     for name, selector in selectors.items():
-        pipeline = Pipeline([("selection", selector), ("model", model)])
+        
         print(f"Training XGBoost model on {name} dataset...")
         output = results / "xgboost" / name.lower()
         output.mkdir(parents=True, exist_ok=True)
+
+        pipeline = Pipeline(
+            [("selection", selector), ("model", model)],
+            memory=str(output / "cache") if name == "MI" else None
+        )
 
         grid = GridSearchCV(
             estimator=pipeline,
@@ -101,6 +106,7 @@ def main():
             scoring="f1_macro",
             cv=cv,
             n_jobs=NTHREAD,
+            pre_dispatch=NTHREAD, # default 2*n_jobs
             verbose=1,
             return_train_score=True
         )
@@ -176,6 +182,11 @@ def main():
         print(f"Best CV F1 macro: {grid.best_score_:.4f}")
         print(f"Test F1 macro: {metrics['f1_macro']:.4f}")
         print(f"Results saved in {output}")
+
+        # Deleting cache directory if it exists
+        if (cache_dir := (output / "cache")).is_dir():
+            rmtree(cache_dir)
+            print(f"Cache directory {cache_dir} deleted.")
 
 if __name__ == "__main__":
     main()
